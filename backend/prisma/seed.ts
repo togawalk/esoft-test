@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import { userService } from "../src/services/user.service";
 
 const prisma = new PrismaClient();
 
@@ -23,10 +24,20 @@ const main = async () => {
     await prisma.task.deleteMany();
 
     for (const u of userData) {
-      const user = await prisma.user.create({
-        data: u,
+      const hashedPassword = await userService.hashPassword(u.password); // Хешируем пароль каждого пользователя
+      const user: Prisma.UserCreateInput = {
+        firstName: u.firstName,
+        lastName: u.lastName,
+        username: u.username,
+        password: hashedPassword
+      };
+
+      const createdUser = await prisma.user.create({
+        data: user,
       });
-      console.log(`Created user with id: ${user.id}`);
+
+      console.log(`Created user with id: ${createdUser.id}`);
+
     }
 
     console.log(`Database has been seeded. 🌱`);

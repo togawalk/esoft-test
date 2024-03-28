@@ -1,11 +1,9 @@
-import express from "express";
 import cors from "cors";
 const port = 3000;
 
 import app from "./app";
 import "./routes/v1/task.route";
-
-app.use(express.json());
+import "./routes/v1/auth.route";
 
 app.use(cors());
 
