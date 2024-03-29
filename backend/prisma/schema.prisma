@@ -33,6 +33,7 @@ model Task {
 model User {
   id               Int     @id @default(autoincrement())
   firstName        String
+  role             Role
   lastName         String
   middleName       String?
   username         String  @unique
@@ -54,4 +55,9 @@ enum Status {
   IN_PROGRESS
   DONE
   CANCELED
+}
+
+enum Role {
+  USER
+  ADMIN
 }

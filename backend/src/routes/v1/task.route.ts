@@ -1,6 +1,4 @@
 import { router } from "../../app";
+import { taskController } from "../../controllers/task.controller";
 
-router.get("/tasks", (req, res) => {
-  res.send('Task');
-});
-
+router.get('/tasks', taskController.getAllTasks);

@@ -3,42 +3,44 @@ import { userService } from "../src/services/user.service";
 
 const prisma = new PrismaClient();
 
-const userData: Prisma.UserCreateInput[] = [
-  {
-    firstName: "Alice",
-    lastName: "Alice",
-    username: "toga",
-    password: "toga"
-  },
-  {
-    firstName: "Zhenya",
-    lastName: "Zhenya",
-    username: "togawalk",
-    password: "togawalk"
-  },
-];
-
 const main = async () => {
   try {
-    await prisma.user.deleteMany();
     await prisma.task.deleteMany();
+    await prisma.user.deleteMany();
 
-    for (const u of userData) {
-      const hashedPassword = await userService.hashPassword(u.password); // Хешируем пароль каждого пользователя
-      const user: Prisma.UserCreateInput = {
-        firstName: u.firstName,
-        lastName: u.lastName,
-        username: u.username,
-        password: hashedPassword
-      };
+    const hashedPassword = await userService.hashPassword("toga"); // Хешируем пароль каждого пользователя
+    const alice = await prisma.user.create({
+      data: {
+        firstName: "Alice",
+        lastName: "Alice",
+        username: "toga",
+        password: hashedPassword,
+        role: 'ADMIN'
+      }
+    })
+    await prisma.task.create({
+      data: {
+        title: 'Task 1',
+        description: 'Description for Task 1',
+        dueDate: new Date('2024-06-15'),
+        priority: 'MEDIUM',
+        status: 'IN_PROGRESS',
+        creatorId: alice.id,
+        responsibleId: alice.id
+      }
+    })
 
-      const createdUser = await prisma.user.create({
-        data: user,
-      });
-
-      console.log(`Created user with id: ${createdUser.id}`);
-
-    }
+    await prisma.task.create({
+      data: {
+        title: 'Task 2',
+        description: 'Description for Task 2',
+        dueDate: new Date('2024-05-15'),
+        priority: 'HIGH',
+        status: 'TODO',
+        creatorId: alice.id,
+        responsibleId: alice.id
+      }
+    })
 
     console.log(`Database has been seeded. 🌱`);
   } catch (error) {
