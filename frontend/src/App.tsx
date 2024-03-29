@@ -1,14 +1,28 @@
-import { Card } from "@tremor/react";
-import { TaskTable } from "./shared/ui/task-table";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { TasksPage } from "./pages/tasks";
+import { MainLayout } from "./shared/ui/main-layout";
+import { SignInPage } from "./pages/sign-in";
+
+const router = createBrowserRouter(
+  [
+    {
+      element: <MainLayout />,
+      children: [
+        {
+          path: '/',
+          element: <TasksPage />,
+        },
+        {
+          path: '/sign_in',
+          element: <SignInPage />,
+        },
+      ],
+    },
+  ])
 
 function App() {
   return (
-    <div className="container mx-auto my-12">
-      <Card>
-        <TaskTable />
-      </Card>
-
-    </div>
+    <RouterProvider router={router} />
   );
 }
 

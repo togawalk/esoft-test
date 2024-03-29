@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import colors from 'tailwindcss/colors';
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 export default {
   darkMode: 'class',
@@ -14,6 +15,9 @@ export default {
     transparent: 'transparent',
     current: 'currentColor',
     extend: {
+      fontFamily: {
+        'sans': ['Roboto', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         // light mode
         tremor: {
