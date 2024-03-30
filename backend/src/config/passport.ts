@@ -11,7 +11,7 @@ export const jwtStrategy = new JwtStrategy(jwtOptions, async (jwtPayload, done) 
   try {
     const user = await prisma.user.findUnique({
       where: {
-        username: jwtPayload.id,
+        id: jwtPayload.id,
       },
     });
     

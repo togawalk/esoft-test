@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { userService } from "../src/services/user.service";
+import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
@@ -8,14 +9,25 @@ const main = async () => {
     await prisma.task.deleteMany();
     await prisma.user.deleteMany();
 
-    const hashedPassword = await userService.hashPassword("toga");
+    const hashedPassword = await userService.hashPassword("toga"); // Хешируем пароль каждого пользователя
     const alice = await prisma.user.create({
       data: {
         firstName: "Alice",
-        lastName: "Alice",
+        lastName: faker.person.lastName('female'),
         username: "toga",
         password: hashedPassword,
         role: 'ADMIN'
+      }
+    })
+
+    const hashedPassword2 = await userService.hashPassword("walk"); // Хешируем пароль каждого пользователя
+    await prisma.user.create({
+      data: {
+        firstName: "Evgeny",
+        lastName: faker.person.lastName('male'),
+        username: "walk",
+        password: hashedPassword2,
+        role: 'USER'
       }
     })
     await prisma.task.create({
