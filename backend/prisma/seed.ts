@@ -8,7 +8,7 @@ const main = async () => {
     await prisma.task.deleteMany();
     await prisma.user.deleteMany();
 
-    const hashedPassword = await userService.hashPassword("toga"); // Хешируем пароль каждого пользователя
+    const hashedPassword = await userService.hashPassword("toga");
     const alice = await prisma.user.create({
       data: {
         firstName: "Alice",

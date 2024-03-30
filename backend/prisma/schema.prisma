@@ -23,15 +23,15 @@ model Task {
   priority      Priority
   status        Status
   creator       User      @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId     Int
+  creatorId     String
   responsible   User      @relation("ResponsibleFor", fields: [responsibleId], references: [id])
-  responsibleId Int
+  responsibleId String
 
   @@map("tasks")
 }
 
 model User {
-  id               Int     @id @default(autoincrement())
+  id               String  @id @unique @default(uuid())
   firstName        String
   role             Role
   lastName         String
@@ -40,6 +40,9 @@ model User {
   password         String
   createdTasks     Task[]  @relation("CreatedBy")
   responsibleTasks Task[]  @relation("ResponsibleFor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
