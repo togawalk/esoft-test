@@ -1,10 +1,9 @@
-import { Priority, Role, Status, User } from '@prisma/client';
-import { taskService } from '../services/task.service';
-import catchAsync from '../utils/catchAsync';
-import passport from 'passport';
-import { jwtOptions } from '../config/passport';
-import jwt from 'jsonwebtoken';
-
+import { Priority, Role, Status, User } from "@prisma/client";
+import { taskService } from "../services/task.service";
+import catchAsync from "../utils/catchAsync";
+import passport from "passport";
+import { jwtOptions } from "../config/passport";
+import jwt from "jsonwebtoken";
 
 interface CustomUser {
   id: string | undefined;
@@ -13,7 +12,7 @@ interface CustomUser {
 
 declare global {
   namespace Express {
-    interface User extends CustomUser { }
+    interface User extends CustomUser {}
   }
 }
 
@@ -22,9 +21,7 @@ const getAllTasks = catchAsync(async (req, res) => {
   res.send(allTasks);
 });
 
-
 const createTask = catchAsync(async (req, res) => {
-
   if (req.user && req.user.id && req.user.role) {
     const taskData = {
       title: req.body.title,
@@ -33,15 +30,15 @@ const createTask = catchAsync(async (req, res) => {
       priority: req.body.priority,
       status: req.body.status,
       responsibleId: req.body.responsibleId,
-      creatorId: req.user.id
+      creatorId: req.user.id,
     };
 
     const result = await taskService.createTask(taskData);
-    res.send(result)
+    res.send(result);
 
     // res.send('Profile Page');
   } else {
-    res.status(401).send('Unauthorized');
+    res.status(401).send("Unauthorized");
   }
 
   // const taskData = {
@@ -60,9 +57,7 @@ const createTask = catchAsync(async (req, res) => {
   // const allTasks = await taskService.getAllTasks();
 });
 
-
 export const taskController = {
   getAllTasks,
-  createTask
+  createTask,
 };
-
