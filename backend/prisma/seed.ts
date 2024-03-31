@@ -9,25 +9,37 @@ const main = async () => {
     await prisma.task.deleteMany();
     await prisma.user.deleteMany();
 
-    const hashedPassword = await userService.hashPassword("toga"); // Хешируем пароль каждого пользователя
-    const alice = await prisma.user.create({
+    const adminHashedPassword = await userService.hashPassword("admin");
+    const userHashedPassword = await userService.hashPassword("user");
+
+    const admin= await prisma.user.create({
       data: {
         firstName: "Alice",
         lastName: faker.person.lastName("female"),
-        username: "toga",
-        password: hashedPassword,
+        username: "admin",
+        password: adminHashedPassword,
         role: "ADMIN",
       },
     });
 
-    const hashedPassword2 = await userService.hashPassword("walk"); // Хешируем пароль каждого пользователя
     await prisma.user.create({
       data: {
         firstName: "Evgeny",
         lastName: faker.person.lastName("male"),
-        username: "walk",
-        password: hashedPassword2,
+        username: "user",
+        password: userHashedPassword,
         role: "USER",
+        managerId: admin.id
+      },
+    });
+    const user = await prisma.user.create({
+      data: {
+        firstName: "Corina",
+        lastName: faker.person.lastName("female"),
+        username: "corina",
+        password: userHashedPassword,
+        role: "USER",
+        managerId: admin.id
       },
     });
     await prisma.task.create({
@@ -37,8 +49,8 @@ const main = async () => {
         dueDate: new Date("2024-06-15"),
         priority: "MEDIUM",
         status: "IN_PROGRESS",
-        creatorId: alice.id,
-        responsibleId: alice.id,
+        creatorId: admin.id,
+        responsibleId: user.id,
       },
     });
 
@@ -49,8 +61,44 @@ const main = async () => {
         dueDate: new Date("2024-05-15"),
         priority: "HIGH",
         status: "TODO",
-        creatorId: alice.id,
-        responsibleId: alice.id,
+        creatorId: admin.id,
+        responsibleId: user.id,
+      },
+    });
+
+    await prisma.task.create({
+      data: {
+        title: "Task 4",
+        description: "Description for Task 2",
+        dueDate: new Date("2024-05-15"),
+        priority: "HIGH",
+        status: "TODO",
+        creatorId: admin.id,
+        responsibleId: admin.id,
+      },
+    });
+
+    await prisma.task.create({
+      data: {
+        title: "NEW TASK 23",
+        description: "Description for Task 2",
+        dueDate: new Date("2024-04-02"),
+        priority: "HIGH",
+        status: "TODO",
+        creatorId: admin.id,
+        responsibleId: admin.id,
+      },
+    });
+
+    await prisma.task.create({
+      data: {
+        title: "NEW TASK",
+        description: "Description for Task 2",
+        dueDate: new Date("2024-03-31"),
+        priority: "HIGH",
+        status: "TODO",
+        creatorId: admin.id,
+        responsibleId: admin.id,
       },
     });
 

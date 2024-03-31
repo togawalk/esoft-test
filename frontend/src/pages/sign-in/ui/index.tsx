@@ -1,15 +1,31 @@
-import { Card } from "@tremor/react";
-import { Divider, TextInput } from "@tremor/react";
+import { TextInput } from "@tremor/react";
+import { useState } from "react";
+import { authService } from "../../../api.auth";
 
 export const SignInPage = () => {
+  const [inputData, setInputData] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    authService.login('toga', 'toga')
+      .then(response => {
+        // Обработка успешного ответа от сервера
+        console.log("Успешный ответ: ", response.data);
+        localStorage.setItem("token", response.data.token);
+      })
+      .catch(error => {
+        // Обработка ошибки
+        console.error("Ошибка при отправке запроса: ", error);
+      });
+  };
   return (
     <main className="max-w-4xl mx-auto my-12">
       <div className="flex min-h-full flex-1 flex-col justify-center px-4 py-10 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h3 className="text-center text-tremor-title font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-            Log in or create account
+            Log in
           </h3>
-          <form action="#" method="post" className="mt-6 space-y-4">
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="username"
@@ -23,6 +39,7 @@ export const SignInPage = () => {
                 name="username"
                 placeholder=""
                 className="mt-2"
+                required
               />
             </div>
 
@@ -40,6 +57,7 @@ export const SignInPage = () => {
                 autoComplete="password"
                 placeholder=""
                 className="mt-2"
+                required
               />
             </div>
             <button

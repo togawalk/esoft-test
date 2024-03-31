@@ -41,6 +41,10 @@ model User {
   createdTasks     Task[]  @relation("CreatedBy")
   responsibleTasks Task[]  @relation("ResponsibleFor")
 
+  managerId        String?
+  manager          User?     @relation("Subordinates", fields: [managerId], references: [id])
+  subordinates     User[]    @relation("Subordinates")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

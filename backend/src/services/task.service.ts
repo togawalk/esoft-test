@@ -20,7 +20,46 @@ const getAllTasks = async () => {
   return allTasks;
 };
 
-// const createTask = async (task: Task) => {
+const getTasksByUserAndDate = async (responsibleId: string, range: string) => {
+  let endDate = new Date();
+
+  switch (range) {
+    case 'today':
+      endDate = new Date();
+      break;
+    case 'week':
+      endDate.setDate(new Date().getDate() + 7);
+      break;
+    case 'future':
+      endDate.setDate(new Date().getDate() + 365);
+      break;
+    default:
+      return [];
+  }
+  const tasks = await prisma.task.findMany({
+    where: {
+      responsibleId: responsibleId,
+      dueDate: { lte: endDate },
+    },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          middleName: true,
+          username: true,
+          password: false,
+        },
+      },
+    },
+  });
+
+
+  return tasks;
+};
+
+
 const createTask = async ({
   title,
   description,
@@ -56,4 +95,5 @@ const createTask = async ({
 export const taskService = {
   getAllTasks,
   createTask,
+  getTasksByUserAndDate
 };

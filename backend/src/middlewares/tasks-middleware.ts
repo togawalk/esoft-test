@@ -10,12 +10,8 @@ export const tasksMiddleware = (
 ) => {
   const { user, dueDate } = req.query;
 
-  if (user === "current" && dueDate === "today") {
-    return taskController.getTasksForCurrentUserToday(req, res, next);
-  } else if (user === "current" && dueDate === "thisWeek") {
-    return taskController.getTasksForCurrentUserThisWeek(req, res, next);
-  } else if (user === "current" && dueDate === "future") {
-    return taskController.getTasksForCurrentUserFuture(req, res, next);
+  if (user === "current" && dueDate) {
+    return taskController.getCurrentUserTasks(req, res, next);
   }
 
   return taskController.getAllTasks(req, res, next);

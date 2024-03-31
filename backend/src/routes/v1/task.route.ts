@@ -3,13 +3,16 @@ import { router } from "../../app";
 import { taskController } from "../../controllers/task.controller";
 import { tasksValidation } from "../../validations/tasks.validation";
 import { checkUserRole } from "../../middlewares/checkUserRole";
+import { tasksMiddleware } from "../../middlewares/tasks-middleware";
 
 router.get(
   "/tasks",
   passport.authenticate("jwt", { session: false }),
   tasksValidation.validateTasks,
-  taskController.getAllTasks,
+  tasksMiddleware
 );
+
+
 router.post(
   "/tasks",
   passport.authenticate("jwt", { session: false }),

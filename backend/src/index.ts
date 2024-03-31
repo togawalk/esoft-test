@@ -12,6 +12,7 @@ passport.use("jwt", jwtStrategy);
 
 import "./routes/v1/task.route";
 import "./routes/v1/auth.route";
+import "./routes/v1/subordinates.route";
 
 app.get(
   "/protected",
