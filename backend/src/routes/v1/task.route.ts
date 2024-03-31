@@ -9,13 +9,18 @@ router.get(
   "/tasks",
   passport.authenticate("jwt", { session: false }),
   tasksValidation.validateTasks,
-  tasksMiddleware
+  tasksMiddleware,
 );
-
 
 router.post(
   "/tasks",
   passport.authenticate("jwt", { session: false }),
   checkUserRole(["ADMIN"]),
   taskController.createTask,
+);
+
+router.put(
+  "/tasks/:taskId",
+  passport.authenticate("jwt", { session: false }),
+  taskController.changeTask,
 );

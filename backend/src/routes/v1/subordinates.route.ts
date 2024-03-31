@@ -3,13 +3,15 @@ import { router } from "../../app";
 import { checkUserRole } from "../../middlewares/checkUserRole";
 import { subordinatesController } from "../../controllers/subordinates.controller";
 
-router.get('/subordinates/:managerId',
+router.get(
+  "/subordinates/:managerId",
   passport.authenticate("jwt", { session: false }),
-  subordinatesController.getSubordinatesByManagerId
+  subordinatesController.getSubordinatesByManagerId,
 );
 
-router.get('/subordinates',
+router.get(
+  "/subordinates",
   passport.authenticate("jwt", { session: false }),
   checkUserRole(["ADMIN"]),
-  subordinatesController.getSubordinatesCurrentUser
+  subordinatesController.getSubordinatesCurrentUser,
 );

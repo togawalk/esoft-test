@@ -12,7 +12,7 @@ const main = async () => {
     const adminHashedPassword = await userService.hashPassword("admin");
     const userHashedPassword = await userService.hashPassword("user");
 
-    const admin= await prisma.user.create({
+    const admin = await prisma.user.create({
       data: {
         firstName: "Alice",
         lastName: faker.person.lastName("female"),
@@ -29,7 +29,7 @@ const main = async () => {
         username: "user",
         password: userHashedPassword,
         role: "USER",
-        managerId: admin.id
+        managerId: admin.id,
       },
     });
     const user = await prisma.user.create({
@@ -39,7 +39,7 @@ const main = async () => {
         username: "corina",
         password: userHashedPassword,
         role: "USER",
-        managerId: admin.id
+        managerId: admin.id,
       },
     });
     await prisma.task.create({

@@ -3,14 +3,16 @@ import catchAsync from "../utils/catchAsync";
 
 const getSubordinatesByManagerId = catchAsync(async (req, res) => {
   const { managerId } = req.params;
-  const subordinates = await subordinatesService.subordinatesByManagerId(managerId);
+  const subordinates =
+    await subordinatesService.subordinatesByManagerId(managerId);
   res.json(subordinates);
 });
 
-
 const getSubordinatesCurrentUser = catchAsync(async (req, res) => {
   if (req.user && req.user.id && req.user.role) {
-    const subordinates = await subordinatesService.subordinatesByManagerId(req.user.id);
+    const subordinates = await subordinatesService.subordinatesByManagerId(
+      req.user.id,
+    );
     res.json(subordinates);
   } else {
     res.status(401).send("Unauthorized");
@@ -19,5 +21,5 @@ const getSubordinatesCurrentUser = catchAsync(async (req, res) => {
 
 export const subordinatesController = {
   getSubordinatesByManagerId,
-  getSubordinatesCurrentUser
+  getSubordinatesCurrentUser,
 };

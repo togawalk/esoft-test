@@ -1,5 +1,6 @@
 import { Priority, Status, Task } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+import { subordinatesService } from "./subordinates.service";
 
 const getAllTasks = async () => {
   const allTasks = await prisma.task.findMany({
@@ -20,17 +21,35 @@ const getAllTasks = async () => {
   return allTasks;
 };
 
+const updateTask = async (taskId: string, updatedTaskData: any) => {
+  console.log(updatedTaskData);
+
+  try {
+    const updatedTask = await prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data: updatedTaskData,
+    });
+
+    return updatedTask;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Could not update task");
+  }
+};
+
 const getTasksByUserAndDate = async (responsibleId: string, range: string) => {
   let endDate = new Date();
 
   switch (range) {
-    case 'today':
+    case "today":
       endDate = new Date();
       break;
-    case 'week':
+    case "week":
       endDate.setDate(new Date().getDate() + 7);
       break;
-    case 'future':
+    case "future":
       endDate.setDate(new Date().getDate() + 365);
       break;
     default:
@@ -55,10 +74,22 @@ const getTasksByUserAndDate = async (responsibleId: string, range: string) => {
     },
   });
 
-
   return tasks;
 };
 
+const getTaskById = async (taskId: string) => {
+  const taskExists = await prisma.task.findUnique({
+    where: {
+      id: taskId,
+    },
+  });
+
+  if (!taskExists) {
+    throw new Error("Task with the specified ID does not exist");
+  }
+
+  return taskExists;
+};
 
 const createTask = async ({
   title,
@@ -77,6 +108,15 @@ const createTask = async ({
   creatorId: string;
   responsibleId: string;
 }) => {
+  const validOperation = await subordinatesService.isSupervisorForSubordinate(
+    creatorId,
+    responsibleId,
+  );
+
+  if (!validOperation) {
+    throw new Error("Selected subordinate is not a subordinate of the manager");
+  }
+
   const createdTask = await prisma.task.create({
     data: {
       title: title,
@@ -95,5 +135,7 @@ const createTask = async ({
 export const taskService = {
   getAllTasks,
   createTask,
-  getTasksByUserAndDate
+  getTasksByUserAndDate,
+  getTaskById,
+  updateTask,
 };
