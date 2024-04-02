@@ -8,8 +8,9 @@ const login = catchAsync(async (req, res) => {
     username,
     password,
   );
+const { password: userPassword, ...userWithoutPassword } = user;
   const token = await tokenService.generateAuthToken(user);
-  res.send({ token });
+  res.send({ token, userWithoutPassword});
 });
 
 export const authController = {
