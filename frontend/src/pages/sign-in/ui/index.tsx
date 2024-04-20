@@ -1,27 +1,50 @@
-import { TextInput } from "@tremor/react";
-import { useState } from "react";
+import { Card, TextInput } from "@tremor/react";
+import { FormEvent, useState } from "react";
 import { authService } from "../../../api.auth";
 
 export const SignInPage = () => {
-  const [inputData, setInputData] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    authService.login('toga', 'toga')
-      .then(response => {
-        // Обработка успешного ответа от сервера
+
+    try {
+      const response = await authService.login(username, password);
+
+      if (response.data) {
         console.log("Успешный ответ: ", response.data);
         localStorage.setItem("token", response.data.token);
-      })
-      .catch(error => {
-        // Обработка ошибки
-        console.error("Ошибка при отправке запроса: ", error);
-      });
+        localStorage.setItem("user", response.data.userWithoutPassword.role);
+      } else {
+        throw new Error("Данные не получены от сервера.");
+      }
+    } catch (error: any) {
+      console.error("Ошибка при отправке запроса: ", error);
+
+      if (error.response && error.response.status === 404) {
+        setError("Пользователь не существует");
+      } else if (error.response && error.response.status === 401) {
+        setError("Неправильный пароль");
+      }
+    }
   };
+
   return (
     <main className="max-w-4xl mx-auto my-12">
       <div className="flex min-h-full flex-1 flex-col justify-center px-4 py-10 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          {error ? (
+            <Card className="mb-10">
+              <h3 className="text-tremor-title font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                Упс, что-то случилось
+              </h3>
+              <p className="mt-2 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
+                {error}
+              </p>
+            </Card>
+          ) : null}
           <h3 className="text-center text-tremor-title font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
             Log in
           </h3>
@@ -40,6 +63,8 @@ export const SignInPage = () => {
                 placeholder=""
                 className="mt-2"
                 required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 
@@ -58,6 +83,8 @@ export const SignInPage = () => {
                 placeholder=""
                 className="mt-2"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <button

@@ -5,6 +5,16 @@ import { subordinatesService } from "./subordinates.service";
 const getAllTasks = async () => {
   const allTasks = await prisma.task.findMany({
     include: {
+      responsible: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          middleName: true,
+          username: true,
+          password: false,
+        },
+      },
       creator: {
         select: {
           id: true,

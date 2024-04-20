@@ -1,10 +1,9 @@
 import { instance } from "./api.js";
 
 function login(username: string, password: string) {
-  return instance.post("/login", {username: username, password: password})
+  return instance.post("/login", { username: username, password: password });
 }
 
-export const authService= {
+export const authService = {
   login,
 };
-

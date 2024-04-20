@@ -1,1 +1,1 @@
-export { TaskTable } from './ui'
+export { TaskTable } from "./ui";

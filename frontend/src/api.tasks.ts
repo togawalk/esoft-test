@@ -1,10 +1,9 @@
 import { instance } from "./api.js";
 
 function getTasks() {
-  return instance.get("/tasks")
+  return instance.get("/tasks");
 }
 
-export const tasksService= {
+export const tasksService = {
   getTasks,
 };
-

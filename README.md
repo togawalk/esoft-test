@@ -11,7 +11,7 @@
 
 - Typescript
 - PostgreSQL
-- Prisma ORM 
+- Prisma ORM
 - Express.js
 - joi
 - ~~morgan~~

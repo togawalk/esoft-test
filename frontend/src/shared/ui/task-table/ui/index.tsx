@@ -7,39 +7,38 @@ import {
   TableHeaderCell,
   TableRow,
   Select,
-  SelectItem
-} from '@tremor/react';
-import { Dialog, DialogPanel, TextInput } from '@tremor/react';
-import { RiCloseLine } from '@remixicon/react';
-import { useState } from 'react';
-
-const data = [
-  {
-    title: 'Покормить кота',
-    priority: 'HIGH',
-    dueDate: new Date('2024-04-15'),
-    responsible: 'Алиса',
-    status: 'IN_PROGRESS'
-  },
-  {
-    title: 'Наклеить стикеры',
-    priority: 'HIGH',
-    dueDate: new Date('2024-04-18'),
-    responsible: 'Алиса',
-    status: 'IN_PROGRESS'
-  },
-  {
-    title: 'Наклеить стикеры',
-    priority: 'HIGH',
-    dueDate: new Date('2024-04-18'),
-    responsible: 'Алиса',
-    status: 'IN_PROGRESS'
-  },
-];
-
+  SelectItem,
+} from "@tremor/react";
+import { Dialog, DialogPanel, TextInput } from "@tremor/react";
+import { RiCloseLine } from "@remixicon/react";
+import { useState } from "react";
+import { tasksService } from "../../../../api.tasks";
+import { useQuery } from "react-query";
+import { AxiosError } from "axios";
+import { getTaskHeaderColor } from "../../../../utils/getTaskHeaderColor";
 
 export const TaskTable = () => {
+  const role = localStorage.getItem("role");
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data, isLoading, isError, error } = useQuery(["data"], () =>
+    tasksService.getTasks(),
+  );
+
+  if (isError) {
+    const errorData = error as Error | AxiosError;
+    return (
+      <div className="flex justify-center">
+        <p className="text-4xl font-medium text-foreground-lighter">
+          {errorData.message}
+        </p>
+      </div>
+    );
+  }
+
+  const tasks = data?.data ?? [];
+  console.log("Data:", tasks);
+
   return (
     <>
       <Dialog
@@ -66,7 +65,7 @@ export const TaskTable = () => {
             <p className="mt-2 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
               Lorem ipsum dolor sit amet.
             </p>
-            <div className='mt-4 space-y-3'>
+            <div className="mt-4 space-y-3">
               <div>
                 <label
                   htmlFor="transfer-ownership"
@@ -113,7 +112,7 @@ export const TaskTable = () => {
                 >
                   Priority
                 </label>
-                <Select defaultValue="HIGH" className='mt-2'>
+                <Select defaultValue="HIGH" className="mt-2">
                   <SelectItem value="HIGH">High</SelectItem>
                   <SelectItem value="MEDIUM">Medium</SelectItem>
                   <SelectItem value="LOW">Low</SelectItem>
@@ -126,14 +125,13 @@ export const TaskTable = () => {
                 >
                   Status
                 </label>
-                <Select defaultValue="TODO" className='mt-2'>
+                <Select defaultValue="TODO" className="mt-2">
                   <SelectItem value="TODO">Todo</SelectItem>
                   <SelectItem value="IN_PROGRESS">In progress</SelectItem>
                   <SelectItem value="DONE">Done</SelectItem>
                   <SelectItem value="CANCELED">Canceled</SelectItem>
                 </Select>
               </div>
-
             </div>
             <button
               type="submit"
@@ -145,27 +143,25 @@ export const TaskTable = () => {
         </DialogPanel>
       </Dialog>
 
-
-
-
-
-
       <div className="sm:flex sm:items-center sm:justify-between sm:space-x-10">
         <div>
           <h3 className="font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
             Задачи
           </h3>
           <p className="mt-1 text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, itaque.
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+            Dignissimos, itaque.
           </p>
         </div>
-        <button
-          type="button"
-          className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-tremor-brand px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-tremor-brand-emphasis dark:bg-dark-tremor-brand dark:text-dark-tremor-brand-inverted dark:shadow-dark-tremor-input dark:hover:bg-dark-tremor-brand-emphasis sm:mt-0 sm:w-fit"
-          onClick={() => setIsOpen(true)}
-        >
-          Создать задачу
-        </button>
+        {role === "ADMIN" ? (
+          <button
+            type="button"
+            className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-tremor-brand px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-tremor-brand-emphasis dark:bg-dark-tremor-brand dark:text-dark-tremor-brand-inverted dark:shadow-dark-tremor-input dark:hover:bg-dark-tremor-brand-emphasis sm:mt-0 sm:w-fit"
+            onClick={() => setIsOpen(true)}
+          >
+            Создать задачу
+          </button>
+        ) : null}
       </div>
       <Table className="mt-8">
         <TableHead>
@@ -188,21 +184,25 @@ export const TaskTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((task, index) => (
+          {tasks.map((task, index) => (
             <TableRow key={index}>
-              <TableCell className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+              <TableCell
+                className={`font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong ${getTaskHeaderColor(task)}`}
+              >
                 {task.title}
               </TableCell>
               <TableCell>{task.priority}</TableCell>
-              <TableCell>{task.dueDate.toDateString()}</TableCell>
-              <TableCell>{task.responsible}</TableCell>
+              <TableCell>
+                {new Date(task.dueDate).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                {task.responsible.firstName} {task.responsible.lastName}
+              </TableCell>
               <TableCell className="text-right">{task.status}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </>
-
-  )
-}
-
+  );
+};
